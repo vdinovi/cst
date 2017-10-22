@@ -1,7 +1,6 @@
 #import numpy as np
 import pdb as pdb
 
-
 class Node:
     def __init__(self, value, state):
         assert(state and value)
@@ -13,13 +12,11 @@ class Node:
 
     def add_child(self, node):
         node.parent = self
-        self.children.append(node)
-
+        self.children.append(node) 
     def to_s(self):
         s = str(self.value) + " " + str(self.state)
         if self.valid: s += " ** "
         return s
-
 
 def build_tree(node, values, partition, content):
     if (sum(node.state) == sum(content)):
@@ -39,7 +36,6 @@ def build_tree(node, values, partition, content):
             node.add_child(new_node)
             build_tree(new_node, vals, partition, content)
 
-
 def print_tree(node, offset):
     print((" " * offset) + node.to_s())
     for n in node.children:
@@ -52,18 +48,14 @@ def gather_valid(node, result):
         for c in node.children:
             gather_valid(c, result)
 
+#@TODO Instead of checking a valid partition at the end --
+#       for any new child node, just check that it can be added, else invalidate
 def check_valid(leaf, partition):
     values = get_partition(leaf)
     print(values)
     # Check column strict
-    for col in range(0, partition[0]):
-        for row in range(0, len(partition)-1):
-            if values[partition[row]+col] < 
-
-    # check for each row from bot to top-1
-    for row in range(0, len(partition)-1):
-        for col in range(0, partition[row]):
-            if values[partition
+    for pidx in range(1, len(partition)):
+        values[
 
 
 
@@ -78,10 +70,6 @@ def get_partition(leaf):
     partition.reverse()
     return partition
 
-
-
-#result = min_in_s([2,1,1], [3, 1])
-#print(result)
 if __name__ == "__main__":
     partition = [3,1]
     content = [2,1,1]
