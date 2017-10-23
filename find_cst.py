@@ -1,4 +1,4 @@
-#import numpy as np
+import numpy as np
 import pdb as pdb
 
 """
@@ -14,6 +14,14 @@ Only decisions that preserve strictly increasing columns and weaky decreasing ro
 are allowed. This process results in all leafs being valid CSTs.
 """
 
+"""
+ Nodes in our decision tree. Each path from root-to-leaf represents a sequence of values
+ Which can be chopped up according and assembled according to our partition.
+    - Each has a value representing that choice of number in our CST
+    - They are stateful keeping track of the number of values chosen so as 
+      to not exceed the specified content.
+    - Each keeps track of its children and parent
+"""
 class Node:
     def __init__(self, value, state):
         assert(state and value)
@@ -22,43 +30,48 @@ class Node:
         self.children = []
         self.parent = None
 
+    # Adds a child node to this node
     def add_child(self, node):
         node.parent = self
         self.children.append(node) 
 
+    # Converts node to single-line string representation
     def to_s(self):
         return str(self.value) + " " + str(self.state) + ("*" if self.valid else "")
 
-def print_tree(node, offset):
-    print((" " * offset) + node.to_s())
-    for n in node.children:
-        print_tree(n, offset + 3)
+    # Prints the tree at and below this node
+    def print_tree(self, offset):
+        print((" " * offset) + node.to_s())
+        for n in node.children:
+            print_tree(n, offset + 3)
 
-def build_tree(node, values, partition, content, result):
+
+# This constructs our decision tree
+def build_tree(node, values, partition, content, cst_list):
+    # If we have not yet reached a leaf, continue to build the tree
     if (sum(node.state) != sum(content)):
-        vals = values[:]
-        for part in content:
-            if part in node.state:
-                vals[node.state.index(part)] = None
-            else:
-                break
-        for v in vals:
-            if v:
+        # Use only values for which capacity has not been reached
+        for vidx, val in enumerate(values):
+            if node.state[vidx] < content[vidx]:
+                # create new decision node with given value
                 new_state = node.state[:]
-                new_state[v-1] += 1
-                new_node = Node(v, new_state)
+                new_state[vidx] += 1
+                new_node = Node(val, new_state)
                 new_node.parent = node
+                # if adding this decision node does not break constraints, add it
                 if (check_decision(new_node, partition)):
                     node.add_child(new_node)
-                    build_tree(new_node, vals, partition, content, result)
+                    build_tree(new_node, values, partition, content, cst_list)
+    # This node is a leaf, extract the partition and add it to our CST list
     else:
-        p = get_partition(node)
+        p = get_decisions(node)
         if sorted(content) == sorted(node.state):
             p.reverse()
-            result.append(p)
+            cst_list.append(p)
 
+# checks whether making a decision to add a node will break CST properties
 def check_decision(node, partition):
-    arr = get_array(node)
+    arr = get_decisions(node)
     idx = len(arr)-1
     row = 0
     count = idx
@@ -74,15 +87,8 @@ def check_decision(node, partition):
         return False
     return True
   
-def get_partition(leaf):
-    node = leaf
-    partition = [leaf.value]
-    while node.parent:
-        node = node.parent
-        partition.append(node.value)
-    return partition
-
-def get_array(node):
+# Retrieves an list of decisions(values) above this node
+def get_decisions(node):
     n = node
     arr = [n.value]
     while n.parent:
@@ -91,6 +97,7 @@ def get_array(node):
     arr.reverse()
     return arr
 
+# Obtains the number of CSTs for the provided partition and content
 def min_in_s(partition, content):
     state = [0] * len(content)
     state[0] = 1
@@ -100,6 +107,20 @@ def min_in_s(partition, content):
     build_tree(root, values, partition, content, csts)
     return len(csts)
 
-def print_result(partition, content, result):
-    print("min_in_s(" + str(partition) + ", " + str(content) + ") = " + str(result))
+# Compute the kostka matrix for any set of partitions of n
+def kostka(partitions):
+    matr = np.zeros((len(partitions), len(partitions)), dtype=np.int)
+    for row, content in enumerate(partitions):
+        for col, partition in enumerate(partitions):
+            matr[row][col] = min_in_s(partition, content)
+    return matr
+
+if __name__ == "__main__":
+    partitions_4 = [ [4], [3, 1], [2, 2], [2, 1, 1], [1, 1, 1, 1] ]
+    partitions_5 = [ [5], [4, 1], [3, 2], [3, 1, 1], [2, 2, 1], [2, 1, 1, 1], [1, 1, 1, 1, 1] ]
+    print("Kostka n=4")
+    print(kostka(partitions_4))
+    print("Kostka n=5")
+    print(kostka(partitions_5))
+
 
