@@ -43,8 +43,9 @@ def build_tree(node, values, partition, content):
                 new_state = node.state[:]
                 new_state[v-1] += 1
                 new_node = Node(v, new_state)
-                node.add_child(new_node)
+                new_node.parent = node
                 if (check_decision(new_node, partition)):
+                    node.add_child(new_node)
                     build_tree(new_node, vals, partition, content)
 
 # DEBUG -- print tree
@@ -52,6 +53,7 @@ def print_tree(node, offset):
     print((" " * offset) + node.to_s())
     for n in node.children:
         print_tree(n, offset + 3)
+
 
 def get_partition(leaf):
     node = leaf
@@ -61,21 +63,25 @@ def get_partition(leaf):
         partition.append(node.value)
     return partition
 
+
 def check_decision(node, partition):
     arr = get_array(node)
-    m = max(partition)
-    idx = arr[len(arr)-1]
-    try:
-        val = arr[idx]
-    except:
-        pdb.set_trace()
-    # check col-strict
-    if (idx - m >= 0) and (arr[idx] <= arr[idx-m]):
+    idx = len(arr)-1
+    row = 0
+    count = idx
+    # Get the row that this element belongs to
+    while count - partition[row] >= 0:
+        count -= partition[row]
+        row += 1
+    # Check cell below for column-strictness
+    if (row > 0) and (arr[idx] <= arr[idx - partition[row-1]]):
         return False
-    if (idx % m > 0) and (arr[idx] < arr[idx-1]):
+    # Check that row is weakly increasing
+    if (idx - sum(partition[:row]) > 0) and (arr[idx] < arr[idx-1]):
         return False
     return True
   
+
 def get_array(node):
     n = node
     arr = [n.value]
@@ -84,6 +90,9 @@ def get_array(node):
         arr.append(n.value)
     arr.reverse()
     return arr
+
+def find_valid(node):
+    for 
 
 
 def min_in_s(partition, content):
@@ -96,8 +105,9 @@ def min_in_s(partition, content):
     print_tree(root, 0)
     print("")
     # @TODO once tree is assembled, (# CSTs) == (# of leafs)
-    result = find_valid(root)
-    return result
+    #result = find_valid(root)
+    return 0
+    #return result
 
 if __name__ == "__main__":
     partition = [3,1,1]
