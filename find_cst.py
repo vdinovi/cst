@@ -21,7 +21,6 @@ class Node:
         self.state = state
         self.children = []
         self.parent = None
-        self.valid = False
 
     def add_child(self, node):
         node.parent = self
@@ -30,13 +29,10 @@ class Node:
     def to_s(self):
         return str(self.value) + " " + str(self.state) + ("*" if self.valid else "")
 
-
-# DEBUG -- print tree
 def print_tree(node, offset):
     print((" " * offset) + node.to_s())
     for n in node.children:
         print_tree(n, offset + 3)
-
 
 def build_tree(node, values, partition, content, result):
     if (sum(node.state) != sum(content)):
@@ -61,7 +57,6 @@ def build_tree(node, values, partition, content, result):
             p.reverse()
             result.append(p)
 
-
 def check_decision(node, partition):
     arr = get_array(node)
     idx = len(arr)-1
@@ -79,7 +74,6 @@ def check_decision(node, partition):
         return False
     return True
   
-
 def get_partition(leaf):
     node = leaf
     partition = [leaf.value]
@@ -87,7 +81,6 @@ def get_partition(leaf):
         node = node.parent
         partition.append(node.value)
     return partition
-
 
 def get_array(node):
     n = node
@@ -98,35 +91,15 @@ def get_array(node):
     arr.reverse()
     return arr
 
-
 def min_in_s(partition, content):
     state = [0] * len(content)
     state[0] = 1
     root = Node(1, state)
-    # [possible values] == [1 .. length of content]
     values = list(range(1, len(content)+1))
     csts = []
     build_tree(root, values, partition, content, csts)
-    #print_tree(root, 0)
-    #print("")
-    for t in csts:
-        print(t)
     return len(csts)
 
 def print_result(partition, content, result):
     print("min_in_s(" + str(partition) + ", " + str(content) + ") = " + str(result))
-
-def kostka_4():
-    partition = [ [4], [3,1], [2,2], [2,1,1], [1,1,1,1] ]
-    content = [ [4], [3,1], [2,2], [2, 1, 1], [1,1,1,1] ]
-    for p in partition:
-        for c in content:
-            print_result(p, c, min_in_s(p, c))
-
-
-#if __name__ == "__main__":
-    #kostka_4()
-    #p = [4]
-    #c = [3,1]
-    #min_in_s(p, c)
 
