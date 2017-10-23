@@ -115,6 +115,7 @@ def kostka(partitions):
             matr[row][col] = min_in_s(partition, content)
     return matr
 
+"""
 if __name__ == "__main__":
     partitions_4 = [ [4], [3, 1], [2, 2], [2, 1, 1], [1, 1, 1, 1] ]
     partitions_5 = [ [5], [4, 1], [3, 2], [3, 1, 1], [2, 2, 1], [2, 1, 1, 1], [1, 1, 1, 1, 1] ]
@@ -122,5 +123,6 @@ if __name__ == "__main__":
     print(kostka(partitions_4))
     print("Kostka n=5")
     print(kostka(partitions_5))
+"""
 
 
