@@ -30,7 +30,15 @@ class Node:
     def to_s(self):
         return str(self.value) + " " + str(self.state) + ("*" if self.valid else "")
 
-def build_tree(node, values, partition, content):
+
+# DEBUG -- print tree
+def print_tree(node, offset):
+    print((" " * offset) + node.to_s())
+    for n in node.children:
+        print_tree(n, offset + 3)
+
+
+def build_tree(node, values, partition, content, result):
     if (sum(node.state) != sum(content)):
         vals = values[:]
         for part in content:
@@ -46,22 +54,12 @@ def build_tree(node, values, partition, content):
                 new_node.parent = node
                 if (check_decision(new_node, partition)):
                     node.add_child(new_node)
-                    build_tree(new_node, vals, partition, content)
-
-# DEBUG -- print tree
-def print_tree(node, offset):
-    print((" " * offset) + node.to_s())
-    for n in node.children:
-        print_tree(n, offset + 3)
-
-
-def get_partition(leaf):
-    node = leaf
-    partition = [leaf.value]
-    while node.parent:
-        node = node.parent
-        partition.append(node.value)
-    return partition
+                    build_tree(new_node, vals, partition, content, result)
+    else:
+        p = get_partition(node)
+        if sorted(content) == sorted(node.state):
+            p.reverse()
+            result.append(p)
 
 
 def check_decision(node, partition):
@@ -82,6 +80,15 @@ def check_decision(node, partition):
     return True
   
 
+def get_partition(leaf):
+    node = leaf
+    partition = [leaf.value]
+    while node.parent:
+        node = node.parent
+        partition.append(node.value)
+    return partition
+
+
 def get_array(node):
     n = node
     arr = [n.value]
@@ -91,9 +98,6 @@ def get_array(node):
     arr.reverse()
     return arr
 
-def find_valid(node):
-    for 
-
 
 def min_in_s(partition, content):
     state = [0] * len(content)
@@ -101,19 +105,28 @@ def min_in_s(partition, content):
     root = Node(1, state)
     # [possible values] == [1 .. length of content]
     values = list(range(1, len(content)+1))
-    build_tree(root, values, partition, content)
-    print_tree(root, 0)
-    print("")
-    # @TODO once tree is assembled, (# CSTs) == (# of leafs)
-    #result = find_valid(root)
-    return 0
-    #return result
+    csts = []
+    build_tree(root, values, partition, content, csts)
+    #print_tree(root, 0)
+    #print("")
+    for t in csts:
+        print(t)
+    return len(csts)
 
-if __name__ == "__main__":
-    partition = [3,1,1]
-    content = [3,2]
-    # Partition and content must have same sum
-    assert(sum(partition) == sum(content))
-    result = min_in_s(partition, content)
-    print("Valid CSTs: " + str(result))
+def print_result(partition, content, result):
+    print("min_in_s(" + str(partition) + ", " + str(content) + ") = " + str(result))
+
+def kostka_4():
+    partition = [ [4], [3,1], [2,2], [2,1,1], [1,1,1,1] ]
+    content = [ [4], [3,1], [2,2], [2, 1, 1], [1,1,1,1] ]
+    for p in partition:
+        for c in content:
+            print_result(p, c, min_in_s(p, c))
+
+
+#if __name__ == "__main__":
+    #kostka_4()
+    #p = [4]
+    #c = [3,1]
+    #min_in_s(p, c)
 
