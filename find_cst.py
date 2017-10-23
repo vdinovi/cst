@@ -3,20 +3,20 @@ import pdb as pdb
 
 """
 @author Vittorio Dinovi
-@date 10/21/17
+@date 10/22/17
 
 Implemented solution for HW4, problem 27 for MATH 435 with Dr. Mendes
 
 min_in_s(partition, content) returns the number of CSTs for the given partition and content.
 
 This solution uses stateful decision tree to determine the number of valid CSTs.
-Only decisions that preserve strictly increasing columns and weaky decreasing rows
+Only decisions that preserve strictly increasing columns and weaky increasing rows
 are allowed. This process results in all leafs being valid CSTs.
 """
 
 """
  Nodes in our decision tree. Each path from root-to-leaf represents a sequence of values
- Which can be chopped up according and assembled according to our partition.
+ Which can be chopped up and assembled according to our partition.
     - Each has a value representing that choice of number in our CST
     - They are stateful keeping track of the number of values chosen so as 
       to not exceed the specified content.
@@ -37,13 +37,13 @@ class Node:
 
     # Converts node to single-line string representation
     def to_s(self):
-        return str(self.value) + " " + str(self.state) + ("*" if self.valid else "")
+        return str(self.value) + " " + str(self.state)
 
     # Prints the tree at and below this node
     def print_tree(self, offset):
-        print((" " * offset) + node.to_s())
-        for n in node.children:
-            print_tree(n, offset + 3)
+        print((" " * offset) + self.to_s())
+        for n in self.children:
+            n.print_tree(offset + 3)
 
 
 # This constructs our decision tree
@@ -105,6 +105,7 @@ def min_in_s(partition, content):
     values = list(range(1, len(content)+1))
     csts = []
     build_tree(root, values, partition, content, csts)
+    # call root.print_tree(0) if you'd like to see the tree
     return len(csts)
 
 # Compute the kostka matrix for any set of partitions of n
@@ -124,5 +125,4 @@ if __name__ == "__main__":
     print("Kostka n=5")
     print(kostka(partitions_5))
 """
-
 
