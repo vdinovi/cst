@@ -5,9 +5,7 @@ import pdb as pdb
 @author Vittorio Dinovi
 @date 10/22/17
 
-Implemented solution for HW4, problem 27 for MATH 435 with Dr. Mendes
-
-min_in_s(partition, content) returns the number of CSTs for the given partition and content.
+m_in_s(partition, content) returns the number of CSTs for the given partition and content.
 
 This solution uses stateful decision tree to determine the number of valid CSTs.
 Only decisions that preserve strictly increasing columns and weaky increasing rows
@@ -98,7 +96,7 @@ def get_decisions(node):
     return arr
 
 # Obtains the number of CSTs for the provided partition and content
-def min_in_s(partition, content):
+def m_in_s(partition, content):
     state = [0] * len(content)
     state[0] = 1
     root = Node(1, state)
@@ -113,7 +111,7 @@ def kostka(partitions):
     matr = np.zeros((len(partitions), len(partitions)), dtype=np.int)
     for row, content in enumerate(partitions):
         for col, partition in enumerate(partitions):
-            matr[row][col] = min_in_s(partition, content)
+            matr[row][col] = m_in_s(partition, content)
     return matr
 
 """
